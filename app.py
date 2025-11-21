@@ -1,13 +1,13 @@
 import gradio as gr
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 from PIL import Image
 import io
-import base64
 
 
 def generate_image(api_key, prompt, aspect_ratio, safety_filter):
     """
-    Generate image using Gemini API
+    Generate image using Google GenAI API (Imagen model)
 
     Args:
         api_key: Google AI API key
@@ -25,39 +25,41 @@ def generate_image(api_key, prompt, aspect_ratio, safety_filter):
         return None, "❌ Please enter a prompt"
 
     try:
-        # Configure Gemini API
-        genai.configure(api_key=api_key)
+        # Create GenAI client
+        client = genai.Client(api_key=api_key)
 
-        # Use Imagen model for image generation
-        model = genai.GenerativeModel('imagen-3.0-generate-001')
-
-        # Generate image
-        response = model.generate_content(
-            prompt,
-            generation_config=genai.types.GenerationConfig(
-                response_modalities=["image"],
-            )
+        # Configure image generation settings
+        config = types.GenerateImagesConfig(
+            number_of_images=1,
+            aspect_ratio=aspect_ratio,
+            output_mime_type="image/png",
         )
 
-        # Extract image from response
-        if response.candidates and len(response.candidates) > 0:
-            candidate = response.candidates[0]
-            if hasattr(candidate, 'content') and candidate.content.parts:
-                for part in candidate.content.parts:
-                    if hasattr(part, 'inline_data'):
-                        # Get image data
-                        image_data = part.inline_data.data
-                        image = Image.open(io.BytesIO(image_data))
-                        return image, f"✅ Image generated successfully!\nPrompt: {prompt}\nAspect Ratio: {aspect_ratio}"
+        # Generate image using Imagen 3 model
+        response = client.models.generate_images(
+            model='imagen-3.0-generate-002',
+            prompt=prompt,
+            config=config
+        )
+
+        # Extract and return the generated image
+        if response.generated_images and len(response.generated_images) > 0:
+            generated_image = response.generated_images[0]
+            # The image attribute is already a PIL Image
+            image = generated_image.image
+
+            return image, f"✅ Image generated successfully!\nPrompt: {prompt}\nAspect Ratio: {aspect_ratio}"
 
         return None, "❌ No image was generated. Please try again with a different prompt."
 
     except Exception as e:
         error_msg = str(e)
-        if "API_KEY_INVALID" in error_msg:
+        if "API_KEY_INVALID" in error_msg or "invalid api key" in error_msg.lower():
             return None, "❌ Invalid API key. Please check your API key and try again."
-        elif "QUOTA_EXCEEDED" in error_msg:
+        elif "QUOTA_EXCEEDED" in error_msg or "quota" in error_msg.lower():
             return None, "❌ Quota exceeded. Please check your API usage limits."
+        elif "permission" in error_msg.lower():
+            return None, "❌ Permission denied. Please ensure your API key has access to Imagen models."
         else:
             return None, f"❌ Error: {error_msg}"
 

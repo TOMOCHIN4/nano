@@ -4,7 +4,7 @@ emoji: 🎨
 colorFrom: blue
 colorTo: purple
 sdk: gradio
-sdk_version: 4.0.0
+sdk_version: 6.0.0
 app_file: app.py
 pinned: false
 license: mit
@@ -12,7 +12,7 @@ license: mit
 
 # 🎨 Gemini Image Generation App
 
-A simple and intuitive Gradio application for generating images using Google's Gemini API (Imagen 3 model).
+A simple and intuitive Gradio application for generating images using Google's GenAI SDK (Imagen 3 model).
 
 ## Features
 
@@ -51,10 +51,11 @@ A simple and intuitive Gradio application for generating images using Google's G
 
 ## Technical Details
 
-- **Model**: Imagen 3.0 (imagen-3.0-generate-001)
-- **Framework**: Gradio 4.0+
-- **API**: Google Generative AI Python SDK
+- **Model**: Imagen 3.0 (imagen-3.0-generate-002)
+- **Framework**: Gradio 6.0.0+
+- **API**: Google GenAI Python SDK (google-genai 1.52.0+)
 - **Deployment**: Hugging Face Spaces
+- **Python**: 3.10+
 
 ## Privacy & Security
 
@@ -105,6 +106,6 @@ MIT License - feel free to use and modify for your projects
 
 ## Acknowledgments
 
-- Google Gemini API for image generation capabilities
-- Gradio for the web interface framework
+- Google GenAI SDK for unified API access to Imagen models
+- Gradio 6.0 for the modern web interface framework
 - Hugging Face for hosting platform
