@@ -56,7 +56,9 @@ def generate_image(api_key, prompt, model_name, aspect_ratio, safety_filter):
         # Extract and return the generated image
         for part in response.parts:
             if part.inline_data is not None:
-                image = part.as_image()
+                # Convert bytes to PIL Image
+                image_data = part.inline_data.data
+                image = Image.open(io.BytesIO(image_data))
                 return image, f"✅ Image generated successfully!\nModel: {model_name}\nPrompt: {prompt}\nAspect Ratio: {aspect_ratio}"
 
         return None, "❌ No image was generated. Please try again with a different prompt."
