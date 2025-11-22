@@ -12,24 +12,39 @@ license: mit
 
 # 🎨 Gemini Image Generation App
 
-A simple and intuitive Gradio application for generating images using Google's GenAI SDK (Imagen 3 model).
+A simple and intuitive Gradio application for generating images using Google's Gemini image models (Nano Banana 🍌).
 
 ## Features
 
 - 🔑 Secure API key input
-- 📝 Text-to-image generation
+- 🤖 **Model Selection**: Choose between Gemini 3 Pro Image (Nano Banana Pro) or 2.5 Flash Image (Nano Banana)
+- 📝 Text-to-image generation with state-of-the-art quality
 - 📐 Multiple aspect ratio options (1:1, 16:9, 9:16, 4:3, 3:4)
-- 🛡️ Safety filter controls
 - 💡 Example prompts for inspiration
 - 🎨 Clean and modern UI
+
+## Models Available
+
+### 🍌⭐ Gemini 3 Pro Image (Nano Banana Pro)
+- **Release**: November 20, 2025
+- **Best for**: Professional-grade image generation
+- **Features**: High-resolution (1K/2K/4K), advanced text rendering, complex compositions
+- **Model ID**: `gemini-3-pro-image-preview`
+
+### 🍌⚡ Gemini 2.5 Flash Image (Nano Banana)
+- **Release**: August 26, 2025
+- **Best for**: Fast, efficient image generation
+- **Features**: 1024px resolution, 2-3x faster than competitors, high-volume tasks
+- **Model ID**: `gemini-2.5-flash-image`
 
 ## How to Use
 
 1. **Get API Key**: Visit [Google AI Studio](https://aistudio.google.com/app/apikey) to obtain your API key
 2. **Enter API Key**: Paste your API key in the secure input field
-3. **Write Prompt**: Describe the image you want to generate in detail
-4. **Select Options**: Choose your preferred aspect ratio and safety settings
-5. **Generate**: Click the "Generate Image" button and wait for your image
+3. **Select Model**: Choose between Gemini 3 Pro (quality) or 2.5 Flash (speed)
+4. **Write Prompt**: Describe the image you want to generate in detail
+5. **Select Aspect Ratio**: Choose your preferred aspect ratio
+6. **Generate**: Click the "Generate Image" button and wait for your image
 
 ## Tips for Better Results
 
@@ -51,7 +66,9 @@ A simple and intuitive Gradio application for generating images using Google's G
 
 ## Technical Details
 
-- **Model**: Imagen 3.0 (imagen-3.0-generate-002)
+- **Models**:
+  - Gemini 3 Pro Image (`gemini-3-pro-image-preview`)
+  - Gemini 2.5 Flash Image (`gemini-2.5-flash-image`)
 - **Framework**: Gradio 5.49.1 (stable)
 - **API**: Google GenAI Python SDK (google-genai 1.52.0+)
 - **Deployment**: Hugging Face Spaces

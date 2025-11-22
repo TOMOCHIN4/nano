@@ -57,3 +57,46 @@
 - API Structure: Client-based architecture
 - Configuration: Using `types.GenerateImagesConfig`
 - Response: Direct PIL Image access via `response.generated_images[0].image`
+
+## 2025-11-22
+
+### Model Migration: Imagen to Gemini Image Models
+
+#### Background Research
+- Investigated Gemini image generation capabilities (codenamed "Nano Banana" 🍌)
+- Discovered two primary models:
+  - **Gemini 3 Pro Image** (Nano Banana Pro): Released Nov 20, 2025 - professional-grade
+  - **Gemini 2.5 Flash Image** (Nano Banana): Released Aug 26, 2025 - fast and efficient
+- Found that Gemini image models use different API from Imagen:
+  - Imagen: `generate_images()` method
+  - Gemini: `generate_content()` with `response_modalities=["IMAGE"]`
+
+#### Implementation Changes
+- **Updated app.py**:
+  - Added MODELS dictionary with both Gemini image models
+  - Created model selection dropdown in UI
+  - Changed API calls from `generate_images()` to `generate_content()`
+  - Updated config from `GenerateImagesConfig` to `GenerateContentConfig` with `ImageConfig`
+  - Modified response parsing to use `response.parts` and `part.as_image()`
+  - Added model name to success message
+  - Updated UI instructions and tips
+
+- **Updated documentation**:
+  - README.md: Added Models Available section with detailed comparison
+  - source_doc.md: Replaced Imagen documentation with Gemini Image models
+  - Added code examples for both models
+  - Documented API differences between Imagen and Gemini
+
+#### Model Comparison
+- **Gemini 3 Pro Image (Nano Banana Pro)**:
+  - Model ID: `gemini-3-pro-image-preview`
+  - Best for professional-grade assets
+  - High-resolution: 1K/2K/4K support
+  - Advanced text rendering capabilities
+
+- **Gemini 2.5 Flash Image (Nano Banana)**:
+  - Model ID: `gemini-2.5-flash-image`
+  - 2-3x faster than competitors
+  - 1024px resolution
+  - Cost: $0.039 per image
+  - State-of-the-art quality

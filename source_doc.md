@@ -1,38 +1,58 @@
 # Source Documentation
 
-## Google GenAI SDK - Image Generation API
+## Google GenAI SDK - Gemini Image Generation API
 
 ### SDK Overview
-Google's unified GenAI SDK (`google-genai`) provides image generation capabilities through the Imagen 3 and Imagen 4 models.
+Google's unified GenAI SDK (`google-genai`) provides image generation capabilities through the Gemini image models (codenamed "Nano Banana" 🍌).
 
 **Latest Version**: 1.52.0 (Released: November 21, 2025)
 
-### Model Information
-- **Imagen 3**: `imagen-3.0-generate-002` (recommended)
-- **Imagen 4**: `imagen-4.0-generate-001` (newer, may have different pricing)
-- **Capabilities**: Text-to-image generation with advanced controls
+### Gemini Image Model Information
+
+#### Gemini 3 Pro Image (Nano Banana Pro) 🍌⭐
+- **Model ID**: `gemini-3-pro-image-preview`
+- **Release Date**: November 20, 2025
+- **Best for**: Professional-grade asset production
+- **Capabilities**:
+  - High-resolution output (1K, 2K, 4K visuals)
+  - Advanced text rendering for infographics and marketing
+  - Complex multi-turn creation tasks
+  - Grounding with Google Search
+  - Superior composition control
+- **Python Requirement**: >=3.10
+
+#### Gemini 2.5 Flash Image (Nano Banana) 🍌⚡
+- **Model ID**: `gemini-2.5-flash-image`
+- **Release Date**: August 26, 2025
+- **Best for**: Fast, efficient image generation
+- **Capabilities**:
+  - 1024px resolution
+  - 2-3x faster than GPT-4o Image
+  - State-of-the-art for generation and editing
+  - Character consistency across prompts
+  - Targeted transformation and local edits
+- **Pricing**: $30/million tokens ($0.039/image)
 - **Python Requirement**: >=3.10
 
 ### Configuration Parameters
-- `prompt`: Text description of desired image
-- `aspect_ratio`: Image aspect ratio (e.g., "1:1", "16:9", "9:16", "4:3", "3:4")
-- `number_of_images`: Number of images to generate (1-8)
-- `output_mime_type`: Output format ("image/png" or "image/jpeg")
-- `include_rai_reason`: Include Responsible AI reasoning in response
+- `contents`: List containing the text prompt (and optionally input images)
+- `aspect_ratio`: Image aspect ratio via ImageConfig (e.g., "1:1", "16:9", "9:16", "4:3", "3:4")
+- `response_modalities`: Must include "IMAGE" for image generation
+- `image_config`: ImageConfig object for aspect ratio and other image settings
 
 ### Authentication
 - Requires API key from Google AI Studio (https://aistudio.google.com/app/apikey)
 - API key should be kept secure and not hardcoded
 - Supports both Gemini Developer API and Vertex AI
 
-### Python SDK Usage (NEW - google-genai)
+### Python SDK Usage (Gemini Image Models)
 
 **Installation**:
 ```bash
 pip install google-genai>=1.52.0
 ```
 
-**Basic Usage**:
+**Basic Usage (Gemini 2.5 Flash Image)**:
 ```python
 from google import genai
 from google.genai import types
@@ -41,30 +61,48 @@ from google.genai import types
 client = genai.Client(api_key="YOUR_API_KEY")
 
 # Configure generation
-config = types.GenerateImagesConfig(
-    number_of_images=1,
-    aspect_ratio="1:1",
-    output_mime_type="image/png",
+config = types.GenerateContentConfig(
+    response_modalities=["IMAGE"],
+    image_config=types.ImageConfig(
+        aspect_ratio="16:9",
+    ),
 )
 
 # Generate image
-response = client.models.generate_images(
-    model='imagen-3.0-generate-002',
-    prompt='your image description',
+response = client.models.generate_content(
+    model='gemini-2.5-flash-image',
+    contents=['A serene landscape with mountains and a lake at sunset'],
     config=config
 )
 
 # Access generated image
-image = response.generated_images[0].image  # Returns PIL Image
+for part in response.parts:
+    if part.inline_data is not None:
+        image = part.as_image()  # Returns PIL Image
+        image.save("output.png")
 ```
 
-### Migration from Old SDK
+**Using Gemini 3 Pro Image**:
+```python
+# Simply change the model ID
+response = client.models.generate_content(
+    model='gemini-3-pro-image-preview',
+    contents=['Professional marketing banner with bold text: "Gemini 3 Pro"'],
+    config=config
+)
+```
+
+### Migration Notes
 - **Old SDK**: `google-generativeai` (DEPRECATED - support ends August 31, 2025)
 - **New SDK**: `google-genai` (current, unified)
-- **Key Changes**:
-  - Import: `import google.generativeai as genai` → `from google import genai`
-  - Setup: `genai.configure(api_key=...)` → `client = genai.Client(api_key=...)`
-  - Generation: `model.generate_content()` → `client.models.generate_images()`
+- **Imagen vs Gemini Image Models**:
+  - **Imagen**: Uses `generate_images()` method
+  - **Gemini Image**: Uses `generate_content()` with `response_modalities=["IMAGE"]`
+- **Key Differences**:
+  - Import: `from google import genai` and `from google.genai import types`
+  - Setup: `client = genai.Client(api_key=...)`
+  - Config: `GenerateContentConfig` with `ImageConfig` for Gemini models
+  - Response: Access via `response.parts` and `part.as_image()`
 
 ## Gradio Framework
 

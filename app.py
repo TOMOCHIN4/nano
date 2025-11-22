@@ -4,14 +4,21 @@ from google.genai import types
 from PIL import Image
 import io
 
+# Model configuration
+MODELS = {
+    "Gemini 3 Pro Image (Nano Banana Pro) 🍌⭐": "gemini-3-pro-image-preview",
+    "Gemini 2.5 Flash Image (Nano Banana) 🍌⚡": "gemini-2.5-flash-image",
+}
 
-def generate_image(api_key, prompt, aspect_ratio, safety_filter):
+
+def generate_image(api_key, prompt, model_name, aspect_ratio, safety_filter):
     """
-    Generate image using Google GenAI API (Imagen model)
+    Generate image using Google GenAI API (Gemini image models)
 
     Args:
         api_key: Google AI API key
         prompt: Text description for image generation
+        model_name: Selected model name
         aspect_ratio: Aspect ratio for the image
         safety_filter: Safety filter level
 
@@ -28,27 +35,29 @@ def generate_image(api_key, prompt, aspect_ratio, safety_filter):
         # Create GenAI client
         client = genai.Client(api_key=api_key)
 
+        # Get model ID from selection
+        model_id = MODELS[model_name]
+
         # Configure image generation settings
-        config = types.GenerateImagesConfig(
-            number_of_images=1,
-            aspect_ratio=aspect_ratio,
-            output_mime_type="image/png",
+        config = types.GenerateContentConfig(
+            response_modalities=["IMAGE"],
+            image_config=types.ImageConfig(
+                aspect_ratio=aspect_ratio,
+            ),
         )
 
-        # Generate image using Imagen 3 model
-        response = client.models.generate_images(
-            model='imagen-3.0-generate-002',
-            prompt=prompt,
+        # Generate image using Gemini image model
+        response = client.models.generate_content(
+            model=model_id,
+            contents=[prompt],
             config=config
         )
 
         # Extract and return the generated image
-        if response.generated_images and len(response.generated_images) > 0:
-            generated_image = response.generated_images[0]
-            # The image attribute is already a PIL Image
-            image = generated_image.image
-
-            return image, f"✅ Image generated successfully!\nPrompt: {prompt}\nAspect Ratio: {aspect_ratio}"
+        for part in response.parts:
+            if part.inline_data is not None:
+                image = part.as_image()
+                return image, f"✅ Image generated successfully!\nModel: {model_name}\nPrompt: {prompt}\nAspect Ratio: {aspect_ratio}"
 
         return None, "❌ No image was generated. Please try again with a different prompt."
 
@@ -59,7 +68,7 @@ def generate_image(api_key, prompt, aspect_ratio, safety_filter):
         elif "QUOTA_EXCEEDED" in error_msg or "quota" in error_msg.lower():
             return None, "❌ Quota exceeded. Please check your API usage limits."
         elif "permission" in error_msg.lower():
-            return None, "❌ Permission denied. Please ensure your API key has access to Imagen models."
+            return None, "❌ Permission denied. Please ensure your API key has access to Gemini image models."
         else:
             return None, f"❌ Error: {error_msg}"
 
@@ -70,14 +79,15 @@ with gr.Blocks(title="Gemini Image Generation", theme=gr.themes.Soft()) as demo:
         """
         # 🎨 Gemini Image Generation App
 
-        Generate images using Google's Gemini API (Imagen 3 model).
+        Generate images using Google's Gemini image models (Nano Banana 🍌).
 
         **How to use:**
         1. Get your API key from [Google AI Studio](https://aistudio.google.com/app/apikey)
         2. Enter your API key below
-        3. Write a detailed prompt describing the image you want
-        4. Select aspect ratio and safety settings
-        5. Click "Generate Image"
+        3. Select your preferred model (3 Pro or 2.5 Flash)
+        4. Write a detailed prompt describing the image you want
+        5. Select aspect ratio
+        6. Click "Generate Image"
         """
     )
 
@@ -88,6 +98,13 @@ with gr.Blocks(title="Gemini Image Generation", theme=gr.themes.Soft()) as demo:
                 type="password",
                 placeholder="Enter your Google AI API key",
                 info="Your API key is not stored and only used for this generation"
+            )
+
+            model_input = gr.Dropdown(
+                label="🤖 Model",
+                choices=list(MODELS.keys()),
+                value="Gemini 3 Pro Image (Nano Banana Pro) 🍌⭐",
+                info="Gemini 3 Pro: Professional quality | 2.5 Flash: Faster generation"
             )
 
             prompt_input = gr.Textbox(
@@ -129,10 +146,15 @@ with gr.Blocks(title="Gemini Image Generation", theme=gr.themes.Soft()) as demo:
         """
         ---
         ### 💡 Tips for better results:
+        - **Choose the right model**: Gemini 3 Pro for professional quality, 2.5 Flash for speed
         - Be specific and detailed in your prompts
         - Include style, mood, lighting, and composition details
         - Mention specific artists or art styles if desired
         - Experiment with different aspect ratios
+
+        ### 🍌 Model Comparison:
+        - **Gemini 3 Pro Image (Nano Banana Pro)**: Professional-grade, high-resolution (1K/2K/4K), advanced text rendering
+        - **Gemini 2.5 Flash Image (Nano Banana)**: Fast generation, 1024px resolution, efficient for high-volume tasks
 
         ### ⚠️ Notes:
         - API key is required for each generation
@@ -144,7 +166,7 @@ with gr.Blocks(title="Gemini Image Generation", theme=gr.themes.Soft()) as demo:
     # Connect generate button to function
     generate_btn.click(
         fn=generate_image,
-        inputs=[api_key_input, prompt_input, aspect_ratio_input, safety_filter_input],
+        inputs=[api_key_input, prompt_input, model_input, aspect_ratio_input, safety_filter_input],
         outputs=[output_image, status_output]
     )
 
