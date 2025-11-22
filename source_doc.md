@@ -69,9 +69,10 @@ image = response.generated_images[0].image  # Returns PIL Image
 ## Gradio Framework
 
 ### Version Information
-- **Latest Version**: 6.0.0 (Released: November 21, 2025)
+- **Recommended Stable Version**: 5.49.1
+- **Latest Version**: 6.0.0 (Released: November 21, 2025 - very new, stability unverified)
 - **Python Requirement**: >=3.10
-- **New Features**: Server-side rendering (SSR), modern UI, streaming support
+- **Note**: Using 5.49.1 for production stability
 
 ### Interface Components
 - `gr.Textbox`: For API key and prompt input
@@ -102,7 +103,7 @@ emoji: 🎨
 colorFrom: blue
 colorTo: purple
 sdk: gradio
-sdk_version: 6.0.0
+sdk_version: 5.49.1
 app_file: app.py
 pinned: false
 license: mit
@@ -111,12 +112,12 @@ license: mit
 
 ### Configuration
 - **Runtime**: Python 3.10+
-- **SDK**: Gradio 6.0.0+
+- **SDK**: Gradio 5.49.1 (stable)
 - **Hardware**: CPU (sufficient) or GPU (faster, optional)
 
 ### Dependencies
 ```
-gradio>=6.0.0
+gradio==5.49.1
 google-genai>=1.52.0
 Pillow>=10.0.0
 ```

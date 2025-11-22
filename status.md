@@ -15,10 +15,11 @@ SDK Migration & Modernization - Complete
 
 ## Latest Updates (2025-11-21)
 - ✅ Migrated to google-genai SDK 1.52.0 (from deprecated google-generativeai)
-- ✅ Upgraded to Gradio 6.0.0 (from 4.x)
+- ✅ Upgraded to Gradio 5.49.1 (stable version, pinned)
 - ✅ Updated to Imagen 3.0 model (imagen-3.0-generate-002)
 - ✅ Verified no dependency conflicts
 - ✅ Updated all documentation
+- ℹ️ Note: Gradio 6.0.0 released today but opted for stable 5.49.1
 
 ## Next Steps
 1. Local testing of the updated application
@@ -30,7 +31,7 @@ None - All dependencies compatible
 
 ## Technical Stack (Current)
 - **Python**: >=3.10
-- **Gradio**: 6.0.0+
+- **Gradio**: 5.49.1 (stable, pinned)
 - **Google GenAI SDK**: 1.52.0+
 - **Model**: imagen-3.0-generate-002
 - **Pillow**: 10.0.0+
